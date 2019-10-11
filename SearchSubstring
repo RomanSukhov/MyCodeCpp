@@ -1,0 +1,61 @@
+
+#include <string>
+#include <iostream>
+
+using namespace std;
+
+int SearchSubstr(string mainstring, string substring) 
+{
+	int  p = 0;
+	int p1 = 0;
+	int result = -1;
+	while (mainstring[p] != NULL) {
+		p++;
+	}
+	while (substring[p1] != NULL) {
+		p1++;
+	}
+	if (p == 0)
+		cout << "Uncorrect mainstring" << endl;
+	else if (p1 == 0)
+		cout << "Uncorrect substring" << endl;
+	else {
+		int  position, i, arr[256];
+		for (i = 0; i < 256; i++)
+			arr[i] = p1;
+		for (i = p1 - 1; i >= 0; i--)
+			if (arr[(short)(substring[i])] == p1)
+				arr[(short)(substring[i])] = p1 - i - 1;
+		position = (p1 - 1);
+		while (position < p)
+			if (substring[p1 - 1] != mainstring[position])
+				position = position + arr[(short)(mainstring[position])];
+			else
+				for (i = p1 - 2; i >= 0; i--) 
+				{
+					if (substring[i] != mainstring[position - p1 + i + 1]) 
+					{
+						position += arr[(short)(mainstring[position - p1 + i + 1])] - 1;
+						break;
+					}
+					else
+						if (i == 0)
+							return (position - p1 + 1);
+				}
+	}
+	cout << endl;
+	return result;
+}
+
+int main() 
+{
+	string mainstr, substr;
+	cout << "Enter the mainstring" << endl;
+	cin >> mainstr;
+	cout << "Enter the substring" << endl;
+	cin >> substr;
+	int position = SearchSubstr(mainstr, substr);
+	cout << position << endl;
+	system("pause");
+	return 0;
+}
