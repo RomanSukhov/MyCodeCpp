@@ -1,0 +1,87 @@
+#include <iostream>
+using namespace std;
+void PrintShort(short sh)
+{
+	unsigned short mask = 32768;
+	for (int i = 15; i >= 0; i--)
+	{
+		cout << ((sh >> i) & 1);
+	}
+	cout << endl;
+}
+union uni
+{
+	double dbl;
+	unsigned __int64 ui;
+};
+void PrintDouble(double db)
+{
+	uni bin;
+	bin.dbl = db;
+	for (int i = 63; i >= 0; i--)
+	{
+		cout << ((bin.ui >> i) & 1);
+	}
+	cout << endl;
+}
+void InvertBitShort(short sh,int num,int amount)
+{
+	if ((amount + num) <= 17)
+	{
+		unsigned short mask = 32768;
+		for (int i = (num - 1); i < (num + amount); i++)
+		{
+			sh = sh ^ (mask >> i);
+		}
+		PrintShort(sh);
+		cout << sh << endl;
+	}
+}
+void InvertBitDouble(double db, int num, int amount)
+{
+	if ((amount + num) <= 67)
+	{
+		unsigned __int64 mask = 9223372036854775808;
+		uni bin;
+		bin.dbl = db;
+		for (int i = (num - 1); i < (num + amount); i++)
+		{
+			bin.ui = bin.ui ^ (mask >> i);
+		}
+		db = bin.dbl;
+		PrintDouble(db);
+		cout << db << endl;
+	}
+}
+int main()
+{
+	short sh;
+	double db;
+	int q, num, amount;
+	cout << "Print short(1) or double(2)?" << endl;
+	cin >> q;
+	if (q == 1)
+	{
+		cout << "Enter the number type short" << endl;
+		cin >> sh;
+		if ((sh >= -32768) && (sh <= 32767))
+			PrintShort(sh);
+		cout << "Enter the number of bit and amount to invert those (not more than 16 bit)" << endl;
+		cin >> num >> amount;
+		InvertBitShort(sh, num, amount);
+	}
+	else
+	{
+		if (q == 2)
+		{
+			cin >> db;
+			PrintDouble(db);
+			cout << "Enter the number of bit and amount to invert those (not more than 16 bit)" << endl;
+			cin >> num >> amount;
+			InvertBitDouble(db, num, amount);
+		}
+		else return 0;
+	}
+	system("pause");
+	return 0;
+}
