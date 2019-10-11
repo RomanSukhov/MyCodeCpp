@@ -1,0 +1,14 @@
+void FastSort(int *a,int left,int right){
+	int head = (right+left)/2,L=left,R=right;
+	int Znach = a[head];
+	while (left<right) {
+		while (a[right] >= Znach && left<right)
+			right--;
+		while (a[left] <=Znach && left<right)
+			left++;
+		if (left<right)Try_swap(&a[left++], &a[right--]);
+	}
+	Try_swap(&a[right],&a[head] );
+	if (L < right-1)FastSort(a,L,right-1);
+	if (R > right+1)FastSort(a,right+1 , R);
+}
