@@ -1,0 +1,184 @@
+#include<iostream>
+#include<conio.h>
+using namespace std;
+struct Node 
+{
+	Node *left, *right;
+	int key, height;
+	Node(int k) { key = k; left = right = NULL; height = 1; }
+};
+
+int Height(Node *str) 
+{
+	return str? str->height : 0;
+}
+
+void CheckHeight (Node* str)
+{
+	int l = Height(str->left);
+	int r = Height(str->right);
+	str->height = (l > r ? l : r) + 1;
+}
+
+int BalanceValue(Node *str)
+{
+	return Height(str->right) - Height(str->left);
+}
+
+Node* RotateRight(Node *str)
+{
+	Node* ch = str->left;
+	str->left = ch->right;
+	ch->right = str;
+	CheckHeight(str);
+	CheckHeight(ch);
+	return ch;
+}
+
+Node* RotateLeft(Node *str)
+{
+	Node *ch = str->right;
+	str->right = ch->left;
+	ch->left = str;
+	CheckHeight(str);
+	CheckHeight(ch);
+	return ch;
+}
+
+Node* Balance(Node* str)
+{
+	CheckHeight(str); 
+	if (BalanceValue(str) == 2) 
+	{
+		if (BalanceValue(str->right) < 0)
+			str->right = RotateRight(str->right);
+		return RotateLeft(str);
+	}
+	if (BalanceValue(str) == -2)
+	{
+		if (BalanceValue(str->left) > 0)
+			str->left = RotateLeft(str->left);
+		return RotateRight(str);
+	}
+	return str;
+}
+Node* Create(Node* str, int val) 
+{
+	if (!str) return new Node(val);
+	if (val < (str->key)) 
+		str->left = Create(str->left, val);
+	else
+		str->right = Create(str->right, val);
+	return Balance(str);
+}
+
+void Search(Node *Tree, int x)
+{
+	if (Tree == NULL)
+	{
+		return;
+	}
+	else
+	{
+		if (x == Tree->key)
+		{
+			cout << "It was founded" << endl;
+			return;
+		}
+		else
+		{
+			if (x < Tree->key)
+			{
+				Search(Tree->left, x);
+			}
+			else
+			{
+				Search(Tree->right, x);
+			}
+		}
+	}
+}
+
+void DeleteTree (Node*Tree) 
+{
+	if (Tree)
+	{
+		DeleteTree(Tree->left);
+		DeleteTree(Tree->right);
+		delete Tree;
+	}
+}
+
+Node* FindMin(Node*Tree)
+{
+	return Tree->left ? FindMin(Tree->left) : Tree;
+}
+
+Node *RemoveMin(Node *Tree) 
+{
+	if (!Tree->left) return Tree->right;
+	Tree->left = RemoveMin(Tree->left);
+	return Balance(Tree);
+}
+
+Node* Delete(Node *Tree, int k)
+{
+	if (!Tree)return NULL;
+	if (k < Tree->key)
+		Tree->left = Delete(Tree->left, k);
+	else 
+		if (k > Tree->key)
+			Tree->right = Delete(Tree->right, k);
+	else 
+	{
+		Node *r = Tree->right, *l = Tree->left;
+		delete Tree;
+		if (!r) return l;
+		Node *min = FindMin(r);
+		min->right = RemoveMin(r);
+		min->left = l;
+		return Balance(min);
+	}
+	return Balance(Tree);
+}
+
+void Wide(Node *Tree, int size) 
+{
+	int j = 0, i = 1;
+	Node **arr = new Node*[size - 1];
+	arr[0] = Tree;
+	while (i != j) 
+	{
+		Tree = arr[j++];
+		cout << Tree->key << " ";
+		if (Tree->left)
+			arr[i++] = Tree->left;
+		if (Tree->right) 
+			arr[i++] = Tree->right;
+	}
+}
+
+int main() 
+{
+	Node* Tree = NULL;
+	int amount, elem;
+	cout << "Enter the amount of tree" << endl;
+	cin >> amount;
+	for (int i = 0; i < amount; i++)
+	{
+		cin >> elem;
+		Tree = Create(Tree, elem);
+	}
+	cout << endl;
+	cout << "What is the key do you want to delete?" << endl;
+	int ask;
+	cin >> ask;
+	Wide(Tree, amount);
+	cout << endl;
+	Tree = Delete(Tree, ask);
+	Wide(Tree, amount);
+	cout << endl;
+	DeleteTree(Tree);
+	system("pause");
+	return 0;
+}
