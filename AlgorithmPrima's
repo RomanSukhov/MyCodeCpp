@@ -1,0 +1,192 @@
+#include <stdlib.h>
+#include <locale>
+#include <iostream>
+#include <fstream>
+#include <ctime>
+using namespace std;
+
+void InFile(int num, int **array)
+{
+	ofstream text;
+	text.open("text.txt");
+	if (text.is_open())
+	{
+		for (int i = 0; i < num; ++i)
+		{
+			for (int j = 0; j < num; j++)
+			{
+				text << array[i][j] << " ";
+			}
+			text << endl;
+		}
+	}
+	else cout << "Error with opening";
+	text.close();
+}
+
+void PrintMx(int num)
+{
+	char *buf = new (nothrow) char[num*num];
+	if (buf == NULL)
+	{
+		return;
+	}
+	ifstream print("text.txt");
+	if (!print.is_open())
+	{
+		cout << "Error with opening" << endl;
+	}
+	cout << "Matrix is" << endl;
+	for (int i = 0, cnt = 0; i < (num*num); i++)
+	{
+		cnt++;
+		print >> buf;
+		cout << buf << " ";
+		if ((cnt) == num)
+		{
+			cout << endl;
+			cnt = 0;
+		}
+	}
+	print.close();
+}
+
+void Prima(int **array, int num)
+{
+	int a, b, c, d, i, j, k = 1, visited[100000] = { 0 }, min, minArray = 0, path[100000] = { 0 }, index = 0;
+	unsigned int start = clock();
+	for (i = 0; i <num; i++)
+		for (j = 0; j <num; j++)
+		{
+			if (array[i][j] == 0)
+				array[i][j] = 999;
+		}
+	visited[0] = 1;
+	while (k < num)
+	{
+		for (i = 0, min = 999; i < num; i++)
+			for (j = 0; j < num; j++)
+				if (array[i][j] < min)
+					if (visited[i] != 0)
+					{
+						min = array[i][j];
+						a = c = i;
+						b = d = j;
+					}
+
+		if (visited[c] == 0 || visited[d] == 0)
+		{
+			path[index] = b;
+			index++;
+			k++;
+			minArray += min;
+			visited[b] = 1;
+		}
+		array[a][b] = array[b][a] = 999;
+	}
+	unsigned int finish = clock();
+	cout << endl;
+	cout << 0 << " => "; //выбранная вершина за начальную
+	for (int i = 0; i < num - 1; i++)
+	{
+		cout << path[i];
+		if (i < num - 2) cout << " => ";
+	}
+	cout << "\nMin cost  " << minArray << endl;
+	cout << "Work time algorithm: " << (finish - start) << " ms\n";
+}
+
+int main()
+{
+	int **array, m = NULL, num = NULL, choice;
+	cout << "The programm demonstrate working of algorithm Prima, which find min path in random graph" << endl;
+	cout << "If you want to enter weight of ribs your graph press (1),\nif you dont press (2)";
+	cin >> choice;
+	if ((choice != 1) && (choice != 2))
+	{
+		cout << "Uncorrect data" << endl;
+		return 1;
+	}
+	if (choice == 1)
+	{
+		cout << "Ok, enter weight of the path to each vertex" << endl;
+	}
+	printf("Print number of vertices graph ");
+	cin >> num;
+	if (num <= 0)
+	{
+		cout << "Uncorrect data" << endl;
+		return 1;
+	}
+	m = ((num*(num - 3)) / 2) + num;//вершины н-угольника//
+	if ((((num*(num - 3)) / 2) + num) < m)
+	{
+		while ((((num*(num - 3)) / 2) + num)<m)
+		{
+			printf("Error, repeat");
+			cin >> num;
+		}
+	}
+	int count = 0;
+	array = new (nothrow) int *[num];
+	if (array != NULL)
+	{
+		for (int i = 0; i < num; i++)
+		{
+			array[i] = new (nothrow)int[num];
+			if (array[i] == NULL)
+			{
+				cout << i << "Error" << endl;
+				break;
+			}
+		}
+		for (int i = 0; i < num; i++)
+		{
+			for (int j = 0; j < num; j++)
+			{
+				array[i][j] = 0;
+			}
+		}
+		while (count != m)
+		{
+			for (int i = 0; i < num; i++)
+			{
+				for (int j = 0; j < num; j++)
+				{
+					if (i == j) array[i][j] = 0;
+					else
+					{
+						if (count != m)
+						{
+							if (array[i][j] == 0)
+							{
+								if (choice == 1)
+								{
+									cin >> array[i][j];
+									array[j][i] = array[i][j];
+									count++;
+								}
+								if (choice == 2)
+								{
+									array[i][j] = rand() % 9 + 1;//от 1 до 10//
+									array[j][i] = array[i][j];
+									count++;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	InFile(num, array);
+	PrintMx(num);
+	Prima(array, num);
+	for (int i = 0; i < num; i++)
+	{
+		delete[]array[i];
+	}
+	delete[]array;
+	system("pause");
+	return 0;
+}
