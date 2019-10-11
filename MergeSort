@@ -1,0 +1,49 @@
+void SortMerge(int *arr, int start, int finish)
+{
+	if ((finish - start) < 1) return;
+	if ((finish - start) == 1)
+	{
+		if (arr[start] > arr[finish])
+		{
+			swap(arr[start], arr[finish]);
+			return;
+		}
+	}
+	int mid = (start + finish) / 2;
+	SortMerge(arr, start, mid);
+	SortMerge(arr, mid+1, finish);
+	int *buf = new (nothrow) int[finish+1];
+	if (!buf) return;
+	int l = start, r = (mid + 1), count = 0;
+	while ((l <= mid) && (r <= finish))
+	{
+		if (arr[l] > arr[r])
+		{
+			buf[count] = arr[r];
+			r++;
+		}
+		else
+		{
+			buf[count] = arr[l];
+			l++;
+		}
+		count++;
+	}
+	while (l <= mid)
+	{
+		buf[count] = arr[l];
+		l++;
+		count++;
+	}
+	while (r <= finish)
+	{
+		buf[count] = arr[r];
+		r++;
+		count++;
+	}
+	for (int i = 0; i < count; i++)
+	{
+		arr[start + i] = buf[i];
+	}
+	delete[] buf;
+}
