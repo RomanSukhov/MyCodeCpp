@@ -1,0 +1,107 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <Windows.h>
+#include <string>
+#include <cstdlib>
+#include <WinBase.h>
+using namespace std;
+
+ int DelFile(char *Name)
+{
+	HANDLE File;
+	File = CreateFile(Name, GENERIC_READ | GENERIC_WRITE, NULL, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (File == INVALID_HANDLE_VALUE)
+	{
+		cout << "Error, file isn't opened" << endl;
+		return 0;
+	}
+	int Size;
+	Size = GetFileSize(File, NULL);
+	if (Size == INVALID_FILE_SIZE)
+	{
+		cout << "Error with GetFileSize function" << endl;
+	}
+	BYTE *Erase;
+	DWORD Size1 = Size;
+	LPDWORD SizePointer = &Size1;
+	Erase = new (nothrow) BYTE[Size];
+	if (!Erase)
+	{
+		cout << "Error with allotment a memory" << endl;
+		return 0;
+	}
+	cout << Size << "- file size" << endl;
+	for (int i = 0; i < Size; i++)
+	{
+		Erase[i] = 1;
+	}
+	WriteFile(File, Erase, Size, SizePointer, NULL);
+	for (int i = 0; i < Size; i++)
+	{
+		Erase[i] = 0;
+	}
+	WriteFile(File, Erase, Size, SizePointer, NULL);
+	for (int i = 0; i < 5; i++)
+	{
+		HCRYPTPROV hCryptProv = NULL;
+		CryptGenRandom(hCryptProv, Size, Erase);
+		WriteFile(File, Erase, Size, SizePointer, NULL);
+	}
+	CloseHandle(File);
+	delete(Erase);
+	return 1;
+}
+
+int FindFile(LPTSTR Path)
+{
+	HANDLE Find;
+	WIN32_FIND_DATA Data;
+	Find = FindFirstFile(strcat(Path,"\\*"), &Data);
+	Path[(strlen(Path) - 1)] = '\0';
+	if (Find == INVALID_HANDLE_VALUE)
+	{
+		cout << "Error, path is incorrect" << endl;
+		return 0;
+	}
+	if (Find != INVALID_HANDLE_VALUE)
+	{
+		do
+		{
+			if ((strcmp(Data.cFileName, "..")) == 0) continue;
+			if ((strcmp(Data.cFileName, ".")) == 0) continue;
+			if (Data.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY)
+			{
+				cout << Data.cFileName << " Directory " << endl;
+				FindFile(strcat(Path, Data.cFileName));
+				Path[((strlen(Path) - strlen(Data.cFileName))-1)] = '\0';
+			}
+			else
+			{
+				cout << Data.cFileName << " - " << strcat(Path, Data.cFileName) << endl;
+				DelFile(Path);
+				Path[(strlen(Path) - strlen(Data.cFileName))] = '\0';
+			}
+		} while (FindNextFile(Find, &Data));
+		FindClose(Find);
+	}
+	return 1;
+}
+
+int main()
+{
+	int Message;
+	char Path[MAX_PATH];
+	cin >> Path;
+	if (strlen(Path) > MAX_PATH)
+	{
+		cout << "You have written not correctly path" << endl;
+		return 0;
+	}
+	Message = FindFile(Path);
+	if (Message != 1)
+	{
+		cout << "Function of delete file doesn't work!" << endl;
+	}
+	system("pause");
+	return 1;
+}
