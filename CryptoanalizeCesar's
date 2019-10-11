@@ -1,0 +1,192 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <windows.h>
+#include <string.h>
+#include <malloc.h>
+int main()
+{
+	FILE *ish, *text1, *text2, *text3, *text4;
+	int i = 0, key = 0, schet = 0;
+	char symbol, s, s1;
+	int massive[256] = { 0 }, sort[256] = { 0 };
+	ish = fopen("ishodniy.txt", "r");
+	if (ish == NULL)
+	{
+		printf("Error");
+	}
+	printf("Vvedite kluch");
+	scanf("%d", &key);
+	if (key <= 0 || key >=25 )
+	{
+		printf("kluch dolzhen bit polozhitelen i ne > 24");
+		scanf("%d", &key);
+	}
+	text1 = fopen("Text.txt", "w");
+	if (text1 == NULL)
+	{
+		printf("Error");
+	}
+	while ((s = fgetc(ish)) != EOF)
+	{
+		if (s >= 'a' && s <= 'z')
+		{
+			s = (s + key);
+			if (s > 'z')
+			{
+				s = ('a' + (s - 'z'));
+			}
+			fputc((char)s, text1);
+		}
+		if (s >= 'A' && s <= 'Z')
+		{
+			s = (s + key);
+			if (s > 'Z')
+			{
+				s = ('A' + (s - 'Z'));
+			}
+			fputc((char)s, text1);
+		}
+		if (s >= ' ' && s <= '.')
+		{
+			if (s == ' ')
+			{
+				fputc((char)s, text1);
+			}
+			if (s == '!')
+			{
+				fputc((char)s, text1);
+			}
+			if (s == '?')
+			{
+				fputc((char)s, text1);
+			}
+			if (s == '-')
+			{
+				fputc((char)s, text1);
+			}
+			if (s == '.')
+			{
+				fputc((char)s, text1);
+			}
+			if (s == ',')
+			{
+				fputc((char)s, text1);
+			}
+		}
+	}
+	fclose(ish);
+	if (ish == NULL)
+	{
+		printf("Error");
+	}
+	fclose(text1);
+	if (text1 == NULL)
+	{
+		printf("Error");
+	}
+	text2 = fopen("Text.txt", "r");
+	if (text2 == NULL)
+	{
+		printf("Error");
+	}
+	while ((symbol = fgetc(text2)) != EOF)
+	{
+		if (symbol >= 'A' && symbol <= 'Z')
+		{
+			symbol = symbol - ('A' - 'a');
+			massive[symbol]++;
+		}
+		if (symbol >= 'a' && symbol <= 'z')
+		{
+			massive[symbol]++;
+		}
+	}
+	for (int j = 0; j < 256; j++)
+	{
+		sort[j] = j;
+	}
+	int hz = 0, hz1 = 0, k;
+	for (k = 0; k < 255; k++)
+	{
+		for (int j = k + 1; j < 256; j++)
+		{
+			if (massive[j] > massive[k])
+			{
+				hz = massive[j];
+				massive[j] = massive[k];
+				massive[k] = hz;
+				hz1 = sort[j];
+				sort[j] = sort[k];
+				sort[k] = hz1;
+			}
+		}
+	}
+	printf("samiy vstr simvol - %c - %d\n", sort[0], massive[0]);
+	int key1 = (sort[0] - 'e');
+	printf("kluch = %d\n", key1);
+	text3 = fopen("konechniy.txt", "w");
+	if (text3 == NULL)
+	{
+		printf("Error");
+	}
+	while ((s1 = fgetc(text2)) != EOF)
+	{
+		if (s1 >= 'a' && s1 <= 'z')
+		{
+			s1 = (s1 - key1);
+			if (s1 > 'z')
+			{
+				s1 = ('a' + (s1 - 'z'));
+			}
+			fputc((char)s1, text3);
+		}
+		if (s1 >= 'A' && s1 <= 'Z')
+		{
+			s1 = (s1 - key1);
+			if (s1 > 'Z')
+			{
+				s1 = ('A' + (s1 - 'Z'));
+			}
+			fputc((char)s1, text3);
+		}
+		if (s1 >= ' ' && s1 <= '.')
+		{
+			if (s1 == ' ')
+			{
+				fputc((char)s1, text3);
+			}
+			if (s1 == '!')
+			{
+				fputc((char)s1, text3);
+			}
+			if (s1 == '?')
+			{
+				fputc((char)s1, text3);
+			}
+			if (s1 == '-')
+			{
+				fputc((char)s1, text3);
+			}
+			if (s1 == '.')
+			{
+				fputc((char)s1, text3);
+			}
+			if (s1 == ',')
+			{
+				fputc((char)s1, text3);
+			}
+		}
+	}
+	fclose(text2);
+	if (text2 == NULL)
+	{
+		printf("Error");
+	}
+	fclose(text3);
+	if (text3 == NULL)
+	{
+		printf("Error");
+	}
+	system("pause");
+	return 0;
+} 
